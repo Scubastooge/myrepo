@@ -1,0 +1,105 @@
+Commvault and Veeam Comparison
+
+Overview
+
+Commvault and Veeam maturity is high in both products with Commvault having their roots in physical infrastructure and Veeam in virtual infrastructure. Both products use VMWare APIs to provide similar backup capabilities. While both products have many similar features described below, Commvault has a much larger range of capabilities that aren’t applicable to this solution.
+
+Features
+
+Both products provide the following features with many more outside the scope of this project:
+Deduplication
+Encryption
+vSAN support
+Data Replication
+
+Deployment
+
+Both products employ the same deployment, the components include:
+Backup Server. A management plane to configure backup policies, manage server connectivity (VMware) and manage the other required appliances. Deployed as a VM
+Microsoft SQL Server. Configuration database
+Backup Agents. Deployed to each compute node where data is to be backed up from or restored to. Deployed as a VM
+Backup Repositories. The endpoint for all backup data, where backup data and metadata is stored. VM or Physical. Physical required for VADP backups (Over fiber channel)
+
+
+
+
+
+
+Operational Considerations
+
+With both products being so close in terms of features and functionality (for this environment) the major difference between them is operational overhead. With Commvault supporting a much larger range of solutions outside the scope of this project the configuration and maintenance of Commvault is more complex and will require more time to deliver the same solution.
+
+Functional Performance Specification Alignment
+RS-004 - Backup Management - Configuration
+FR-135.01 - Backup Recovery Point Objective
+
+Commvault
+Veeam
+✅
+✅
+
+
+Both solutions provide the capability to schedule backups, specify whether they are incremental/full, configure media destinations and restore the data from backup. Veeam uses a more sophisticated method for collecting data from a vSAN reducing network overhead and improving backup performance.
+
+FR-140.01 - Backup Storage Overwriting 
+
+Commvault
+Veeam
+✅
+✅
+
+
+Part of this FPS will be enforced by FR-140.02 as immutability decisions will define whether data can be overwritten. Both applications monitor and report on storage pool utilisation to provide insights on whether more storage needs to be provisioned. The applications can both define retention periods for backup data.
+
+FR-140.02 - Backup Storage Erase
+
+Commvault
+Veeam
+✅
+✅
+
+
+Immutability in both cases requires the support of other products being object storage that supports immutability or block level immutability. Both solutions have validated the proposed Scality ARTESCA object store, however, as the underlying storage mechanism is block level a solution for block level immutability is required which both solutions can provide with scripts run against the Primera/Alletra storage arrays.
+
+FR-140.03 - Backup Storage Retention
+
+Commvault
+Veeam
+✅
+✅
+
+
+Backup retention periods for both solutions can be defined granularly although additional configuration on immutability providers will be required in both cases if granular (VM/Application basis) retention periods are required. The applications will automatically prune stale backups based on the defined retention period.
+
+FR-140.04 - Backup Storage Retention Controls
+
+Commvault
+Veeam
+✅
+✅
+
+
+This objective is facilitated mostly by FR-140.02 wherein malicious actors who have the highest level of access to the systems can’t erase immutable storage. Each application can provide AD integration to further restrict access with granular controls as to what a user can access to reduce the scope of malicious activity that can disrupt the system.
+
+RS-005 - Backup Management - Testing
+FR-025.05 - Solarwinds Backup Software
+
+Commvault
+Veeam
+✅
+✅
+
+
+The deployment of both solutions will inherently provide this function. Moreover, both products can provide database consistency using vCenter integrations to flush cached data before the backup is taken.
+
+FR-135.02 - Backup Recovery Time Objective
+
+Commvault
+Veeam
+✅
+✅
+
+
+In part these applications can both scale out media repositories and the virtual connector appliances to provide a highly scalable rate of throughput across multiple compute nodes.
+
+FR-143.02 - Traditional Backup
